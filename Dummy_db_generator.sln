@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30413.136
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dummy_db_generator", "Dummy_db_generator\Dummy_db_generator.csproj", "{8BB7F315-2E23-47A2-B3DC-B1BE6FF19991}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8BB7F315-2E23-47A2-B3DC-B1BE6FF19991}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BB7F315-2E23-47A2-B3DC-B1BE6FF19991}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BB7F315-2E23-47A2-B3DC-B1BE6FF19991}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BB7F315-2E23-47A2-B3DC-B1BE6FF19991}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F01E8A64-01CD-4581-AAA1-1F9274281437}
+	EndGlobalSection
+EndGlobal
