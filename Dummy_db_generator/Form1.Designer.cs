@@ -24,7 +24,7 @@ namespace Dummy_db_generator {
         /// Méthode requise pour la prise en charge du concepteur - ne modifiez pas
         /// le contenu de cette méthode avec l'éditeur de code.
         /// </summary>
-        private void InitializeComponent() {         
+        private void InitializeComponent() {
             this.Box_tableName = new System.Windows.Forms.TextBox();
             this.Box_iterationNumber = new System.Windows.Forms.TextBox();
             this.Check_create = new System.Windows.Forms.CheckBox();
@@ -47,6 +47,7 @@ namespace Dummy_db_generator {
             this.Box_randomMax0 = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
+            this.Label_error = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // Box_tableName
@@ -98,7 +99,7 @@ namespace Dummy_db_generator {
             // 
             this.Combo_type0.DisplayMember = "Text";
             this.Combo_type0.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.Combo_type0.FormattingEnabled = true;          
+            this.Combo_type0.FormattingEnabled = true;
             this.Combo_type0.Items.AddRange(ComboBoxItemShare.items);
             this.Combo_type0.Location = new System.Drawing.Point(118, 142);
             this.Combo_type0.Name = "Combo_type0";
@@ -230,16 +231,20 @@ namespace Dummy_db_generator {
             // Box_randomMin0
             // 
             this.Box_randomMin0.Location = new System.Drawing.Point(303, 142);
+            this.Box_randomMin0.MaxLength = 19;
             this.Box_randomMin0.Name = "Box_randomMin0";
             this.Box_randomMin0.Size = new System.Drawing.Size(68, 20);
             this.Box_randomMin0.TabIndex = 23;
+            this.Box_randomMin0.Tag = "0";
             // 
             // Box_randomMax0
             // 
             this.Box_randomMax0.Location = new System.Drawing.Point(377, 142);
+            this.Box_randomMax0.MaxLength = 19;
             this.Box_randomMax0.Name = "Box_randomMax0";
             this.Box_randomMax0.Size = new System.Drawing.Size(68, 20);
             this.Box_randomMax0.TabIndex = 22;
+            this.Box_randomMax0.Tag = "0";
             // 
             // label7
             // 
@@ -259,12 +264,25 @@ namespace Dummy_db_generator {
             this.label8.TabIndex = 21;
             this.label8.Text = "Random max";
             // 
+            // Label_error
+            // 
+            this.Label_error.AutoSize = true;
+            this.Label_error.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            this.Label_error.ForeColor = System.Drawing.Color.Red;
+            this.Label_error.Location = new System.Drawing.Point(166, 90);
+            this.Label_error.Name = "Label_error";
+            this.Label_error.Size = new System.Drawing.Size(516, 20);
+            this.Label_error.TabIndex = 24;
+            this.Label_error.Text = "Some minor errors has occurred, check the end of script for more details";
+            this.Label_error.Visible = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.Label_error);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.Box_randomMax0);
@@ -318,6 +336,7 @@ namespace Dummy_db_generator {
         private TextBox Box_randomMax0;
         private Label label7;
         private Label label8;
+        private Label Label_error;
     }
 }
 
