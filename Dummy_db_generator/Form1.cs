@@ -48,7 +48,7 @@ namespace Dummy_db_generator {
             error.Append("/*");
             Label_error.Visible = false;
             request.AppendLine("/* Automatically generated script");
-            request.AppendLine("All data makes no sense");
+            request.AppendLine("All data is random");
             request.AppendLine("And it should be used for development and testing only");
             request.AppendLine("Check https://github.com/MonsterPoney/Dummy_db_generator for updates */");
 
@@ -89,7 +89,6 @@ namespace Dummy_db_generator {
                 request.Length--;
                 request.AppendLine(")VALUES");
 
-                // TODO : generate values and add them
                 for (int i = 0; i < int.Parse(Box_iterationNumber.Text); i++) {
                     request.Append("(");
                     for (int c = 0; c < colNb; c++) {
@@ -106,18 +105,23 @@ namespace Dummy_db_generator {
                             case "SMALLINT":
                             case "MEDIUMINT":
                             case "BIGINT":
-                                long min = (listRandomMin[c].Text.Trim() == "") ? -9223372036854775808 : long.Parse(listRandomMin[c].Text);
-                                long max = (listRandomMax[c].Text.Trim() == "") ? 9223372036854775807 : long.Parse(listRandomMax[c].Text);
-                                request.Append("'" + GenInt(listType[c].Text, min, max) + "',");
+                                long minNum = (listRandomMin[c].Text.Trim() == "") ? -9223372036854775808 : long.Parse(listRandomMin[c].Text);
+                                long maxNum = (listRandomMax[c].Text.Trim() == "") ? 9223372036854775807 : long.Parse(listRandomMax[c].Text);
+                                request.Append("'" + GenInt(listType[c].Text, minNum, maxNum) + "',");
                                 break;
                             case "FLOAT":
                             case "DOUBLE":
                             case "DECIMAL":
+                                double minDec = double.Parse(listRandomMin[c].Text);
+                                double maxDec = double.Parse(listRandomMax[c].Text);
                                 request.Append("'" +
                                 GenDouble(int.Parse(listSize[c].Text.Split(',')[0]),
                                           int.Parse(listSize[c].Text.Split(',')[1]),
-                                          double.Parse(listRandomMin[c].Text),
-                                          double.Parse(listRandomMax[c].Text)) + "'");
+                                          minDec,
+                                          maxDec) + "'");
+                                break;
+                            case "BIT":
+                                request.Append("'" + ((random.NextDouble()>0.5) ?"1":"0") + "'");
                                 break;
                             case "TEXT":
                             case "CHAR":
@@ -125,7 +129,8 @@ namespace Dummy_db_generator {
                             case "TINYTEXT":
                             case "MEDIUMTEXT":
                             case "LONGTEXT":
-                                request.Append("'" + GenLorem(long.Parse(listSize[c].Text)) + "',");
+                                request.Append("'" + GenLorem(
+                                    long.Parse(listSize[c].Text)) + "',");
                                 break;
                             case "DATE":
                                 request.Append("'" + GenDateTime(true, false) + "',");
@@ -299,6 +304,16 @@ namespace Dummy_db_generator {
             if (String.IsNullOrWhiteSpace(Box_iterationNumber.Text)) {
                 MessageBox.Show("Iteration number must be present", "Error", MessageBoxButtons.OK);
                 return false;
+            }
+
+            foreach(TextBox box in listSize) {
+                string type = listType[int.Parse(box.Tag.ToString())].Text;
+                if (type == "DOUBLE" ||type=="DECIMAL"||type=="FLOAT") {
+                    if (box.Text.Split(',').Length!=2) {
+                        MessageBox.Show($"Size and precision must be present for the column {listColumn[int.Parse(box.Tag.ToString())].Text}", "Error", MessageBoxButtons.OK);
+                        return false;
+                    }
+                }
             }
 
             foreach (TextBox box in listRandomMin) {
@@ -560,7 +575,7 @@ namespace Dummy_db_generator {
             var cb = sender as ComboBox;
 
             if (cb.SelectedItem != null && cb.SelectedItem is ComboBoxItem && ((ComboBoxItem)cb.SelectedItem).Selectable == false) {
-                // deselect item
+                // Deselect item
                 cb.SelectedIndex += 1;
                 return;
             }

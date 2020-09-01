@@ -100,6 +100,7 @@ namespace Dummy_db_generator {
             this.Combo_type0.DisplayMember = "Text";
             this.Combo_type0.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.Combo_type0.FormattingEnabled = true;
+           
             this.Combo_type0.Items.AddRange(ComboBoxItemShare.items);
             this.Combo_type0.Location = new System.Drawing.Point(118, 142);
             this.Combo_type0.Name = "Combo_type0";
@@ -133,7 +134,7 @@ namespace Dummy_db_generator {
             // 
             // Btn_add
             // 
-            this.Btn_add.Location = new System.Drawing.Point(688, 69);
+            this.Btn_add.Location = new System.Drawing.Point(713, 138);
             this.Btn_add.Name = "Btn_add";
             this.Btn_add.Size = new System.Drawing.Size(75, 23);
             this.Btn_add.TabIndex = 7;
@@ -269,11 +270,11 @@ namespace Dummy_db_generator {
             this.Label_error.AutoSize = true;
             this.Label_error.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.Label_error.ForeColor = System.Drawing.Color.Red;
-            this.Label_error.Location = new System.Drawing.Point(166, 90);
+            this.Label_error.Location = new System.Drawing.Point(198, 72);
             this.Label_error.Name = "Label_error";
-            this.Label_error.Size = new System.Drawing.Size(516, 20);
+            this.Label_error.Size = new System.Drawing.Size(543, 20);
             this.Label_error.TabIndex = 24;
-            this.Label_error.Text = "Some minor errors has occurred, check the end of script for more details";
+            this.Label_error.Text = "Some minor errors has occurred, check the end of the script for more details";
             this.Label_error.Visible = false;
             // 
             // Form1

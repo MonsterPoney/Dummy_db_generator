@@ -16,6 +16,7 @@ exception for varchar that can be a first name, last name or an email.
 	FLOAT
 	DOUBLE
 	DECIMAL
+	BIT
 ### Text :
 	CHAR
 	VARCHAR

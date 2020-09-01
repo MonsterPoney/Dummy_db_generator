@@ -7,9 +7,9 @@
 
     // TODO : unsigned
     // TODO : BLOB,MEDIUMBLOB,LONGBLOB
-    // TODO : bit
     // TODO : ENUM ???? :(
     // TODO : Year
+    // TODO : numeric
     class ComboBoxItemShare {
         public static object[] items = new[] {
             new ComboBoxItem() { Selectable = false, Text = "---Common---"},
@@ -25,6 +25,7 @@
             new ComboBoxItem() { Selectable = true, Text = "BIGINT",Value=1},
             new ComboBoxItem() { Selectable = true, Text = "FLOAT",Value=2}, // size,d
             new ComboBoxItem() { Selectable = true, Text = "DOUBLE",Value=2}, // size,d
+            new ComboBoxItem() { Selectable = true, Text = "BIT",Value=0},
             new ComboBoxItem() { Selectable = false, Text = "---Text---"},
             new ComboBoxItem() { Selectable = true, Text = "TEXT",Value=1},
             new ComboBoxItem() { Selectable = true, Text = "TINYTEXT",Value=1},
