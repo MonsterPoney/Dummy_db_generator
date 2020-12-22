@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Dummy_db_generator {
+﻿namespace Dummy_db_generator {
     class StaticArray {
 
         public static string[] firstNames = new[] { "Adam", "Adrian", "Alan", "Alexander", "Andrew", "Anthony", "Austin",
@@ -81,5 +75,15 @@ namespace Dummy_db_generator {
         public static string[] sqlKeywords = new[] {"add", "alter", "all", "and", "any", "as", "asc", "backup", "between", "case", "check", "column", "constraint", "create",
             "database", "default", "delete", "desc", "distinct", "drop", "exec", "exists", "from", "having", "in", "index", "join", "like", "limit", "not", "or", "procedure",
             "rownum", "select", "set", "table", "top", "union", "unique", "update", "values", "view", "where"};
+
+        public static string[] words = new[]{"lorem", "ipsum", "dolor", "sit", "amet", "consectetuer",
+                "adipiscing", "elit", "sed", "diam", "do",",", "nonummy", "nibh", "euismod",
+                "tincidunt", "ut", "laoreet", "dolore", "magna", "aliquam", "erat",".","eiusmod",
+                "tempor","incididunt","labore","et","aliqua","enim","ad","minim","veniam",
+                "quis","nostrud","exercitation","ullamco","laboris","nisi","aliquip","ex","ea",
+                "commodo","consequat","duis","aute","irure","in","reprehenderit","voluptate",
+                "velit","esse","cillum","eu","fugiat","nulla","pariatur","excepteur","sint",
+                "occaecat","cupidatat","non","proident","sunt","culpa","qui","officia",
+                "deserunt","mollit","anim","id","est","laborum"};
     }
 }

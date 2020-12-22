@@ -17,6 +17,8 @@ namespace Dummy_db_generator {
         private Random random;
         public Form1() {
             InitializeComponent();
+            Combo_type0.Items.AddRange(ComboBoxItemShare.items);
+
             listColumn = new List<TextBox>();
             listRandomMin = new List<TextBox>();
             listRandomMax = new List<TextBox>();
@@ -42,6 +44,7 @@ namespace Dummy_db_generator {
             error = new StringBuilder();
         }
 
+        // Generate full request
         private void Btn_generate_Click(object sender, EventArgs e) {
             request.Clear();
             error.Clear();
@@ -69,8 +72,11 @@ namespace Dummy_db_generator {
                 if (Check_create.Checked) {
                     request.AppendLine("CREATE TABLE " + Box_tableName.Text + "(");
                     for (int i = 0; i < listColumn.Count; i++) {
+                        //  Column names
                         request.Append(listColumn[i].Text);
-                        request.Append(" " + listType[i].Text);
+                        // Column types, if parentheses, extract text between
+                        request.Append(" " + (listType[i].Text.Contains("(") ? listType[i].Text.Split('(', ')')[1] : listType[i].Text));
+                        // Column sizes
                         request.Append((String.IsNullOrWhiteSpace(listSize[i].Text)) ? "" : " (" + listSize[i].Text + ")");
                         if (listMendatory[i].Checked)
                             request.Append(" NOT NULL");
@@ -82,6 +88,7 @@ namespace Dummy_db_generator {
                     request.AppendLine(")");
                 }
                 request.AppendLine("INSERT INTO " + Box_tableName.Text + "(");
+                // Column names
                 foreach (TextBox text in listColumn) {
                     if (!String.IsNullOrWhiteSpace(text.Text))
                         request.Append(text.Text + ",");
@@ -89,7 +96,12 @@ namespace Dummy_db_generator {
                 request.Length--;
                 request.AppendLine(")VALUES");
 
+                // Iterate x times, random values generation               
+                progressBar.Visible = true;
+                progressBar.Maximum = int.Parse(Box_iterationNumber.Text);
+                bool futureDateChecked = Check_futureDate.Checked;
                 for (int i = 0; i < int.Parse(Box_iterationNumber.Text); i++) {
+                    progressBar.Value = i;
                     request.Append("(");
                     for (int c = 0; c < colNb; c++) {
                         if (!listMendatory[c].Checked) {
@@ -99,60 +111,69 @@ namespace Dummy_db_generator {
                                 continue;
                             }
                         }
-                        switch (listType[c].Text) {
-                            case "INT":
-                            case "TINYINT":
-                            case "SMALLINT":
-                            case "MEDIUMINT":
-                            case "BIGINT":
-                                long minNum = (listRandomMin[c].Text.Trim() == "") ? -9223372036854775808 : long.Parse(listRandomMin[c].Text);
-                                long maxNum = (listRandomMax[c].Text.Trim() == "") ? 9223372036854775807 : long.Parse(listRandomMax[c].Text);
-                                request.Append("'" + GenInt(listType[c].Text, minNum, maxNum) + "',");
-                                break;
-                            case "FLOAT":
-                            case "DOUBLE":
-                            case "DECIMAL":
-                                double minDec = double.Parse(listRandomMin[c].Text);
-                                double maxDec = double.Parse(listRandomMax[c].Text);
-                                request.Append("'" +
-                                GenDouble(int.Parse(listSize[c].Text.Split(',')[0]),
-                                          int.Parse(listSize[c].Text.Split(',')[1]),
-                                          minDec,
-                                          maxDec) + "'");
-                                break;
-                            case "BIT":
-                                request.Append("'" + ((random.NextDouble()>0.5) ?"1":"0") + "'");
-                                break;
-                            case "TEXT":
-                            case "CHAR":
-                            case "VARCHAR":
-                            case "TINYTEXT":
-                            case "MEDIUMTEXT":
-                            case "LONGTEXT":
-                                request.Append("'" + GenLorem(
-                                    long.Parse(listSize[c].Text)) + "',");
-                                break;
-                            case "DATE":
-                                request.Append("'" + GenDateTime(true, false) + "',");
-                                break;
-                            case "DATETIME":
-                                request.Append("'" + GenDateTime(true, true) + "',");
-                                break;
-                            case "TIMESTAMP":
-                                request.Append("'" + (DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds.ToString() + "',");
-                                break;
-                            case "TIME":
-                                request.Append("'" + GenDateTime(false, true) + "',");
-                                break;
-                            case "FirstName(VARCHAR)":
-                                request.Append("'" + GenName("first") + "',");
-                                break;
-                            case "LastName(VARCHAR)":
-                                request.Append("'" + GenName("last") + "',");
-                                break;
-                            case "Email(VARCHAR)":
-                                request.Append("'" + GenMail() + "',");
-                                break;
+                        try {
+                            switch (listType[c].Text) {
+                                case "INT":
+                                case "TINYINT":
+                                case "SMALLINT":
+                                case "MEDIUMINT":
+                                case "BIGINT":
+                                    long minNum = (listRandomMin[c].Text.Trim() == "") ? -9223372036854775808 : long.Parse(listRandomMin[c].Text);
+                                    long maxNum = (listRandomMax[c].Text.Trim() == "") ? 9223372036854775807 : long.Parse(listRandomMax[c].Text);
+                                    request.Append("'" + Generator.GenInt(listType[c].Text, random, minNum, maxNum) + "',");
+                                    break;
+                                case "FLOAT":
+                                case "DOUBLE":
+                                case "DECIMAL":
+                                    double minDec = double.Parse(listRandomMin[c].Text);
+                                    double maxDec = double.Parse(listRandomMax[c].Text);
+                                    request.Append("'" +
+                                    Generator.GenDouble(int.Parse(listSize[c].Text.Split(',')[0]),
+                                              int.Parse(listSize[c].Text.Split(',')[1]),
+                                              minDec,
+                                              maxDec, random) + "'");
+                                    break;
+                                case "BIT":
+                                    request.Append("'" + ((random.NextDouble() > 0.5) ? "1" : "0") + "'");
+                                    break;
+                                case "TEXT":
+                                case "CHAR":
+                                case "VARCHAR":
+                                case "TINYTEXT":
+                                case "MEDIUMTEXT":
+                                case "LONGTEXT":
+                                    if (listSize[c].Text == "") listSize[c].Text = "42";
+                                    request.Append("'" + Generator.GenLorem(
+                                        long.Parse(listSize[c].Text), random) + "',");
+                                    break;
+                                case "DATE":
+                                    request.Append("'" + Generator.GenDateTime(true, false, random,futureDateChecked,futureDateChecked ? int.Parse(Box_maxYear.Text) : DateTime.Now.Year) + "',");
+                                    break;
+                                case "DATETIME":
+                                    request.Append("'" + Generator.GenDateTime(true, true, random,Check_futureDate.Checked, futureDateChecked ? int.Parse(Box_maxYear.Text) : DateTime.Now.Year) + "',");
+                                    break;
+                                case "TIMESTAMP":
+                                    request.Append("'" + (DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds.ToString() + "',");
+                                    break;
+                                case "TIME":
+                                    request.Append("'" + Generator.GenDateTime(false, true, random,Check_futureDate.Checked, futureDateChecked ? int.Parse(Box_maxYear.Text) : DateTime.Now.Year) + "',");
+                                    break;
+                                case "First Name(VARCHAR)":
+                                    request.Append("'" + Generator.GenName("first", random) + "',");
+                                    break;
+                                case "Last Name(VARCHAR)":
+                                    request.Append("'" + Generator.GenName("last", random) + "',");
+                                    break;
+                                case "Email(VARCHAR)":
+                                    request.Append("'" + Generator.GenMail(random) + "',");
+                                    break;
+                                case "Id(VARCHAR)":
+                                    request.Append("'" + i + "',");
+                                    break;
+                            }
+                        }
+                        catch (Exception ex) {
+                            Console.WriteLine("Exception Btn_add_Click()" + ex.Message + ex.StackTrace);
                         }
                     }
                     request.Length--;
@@ -161,18 +182,23 @@ namespace Dummy_db_generator {
                 request.Length -= 3;
                 request.AppendLine("");
 
+                // if error(s)
                 if (error.Length > 3) {
                     request.AppendLine("/*Errors or warnings : */");
                     error.Append("*/");
                     request.Append(error.ToString());
                 }
+
+                // End of generation, show request
                 request.AppendLine("/*** End of script ***/");
                 string req = request.ToString();
                 RequestForm requestForm = new RequestForm(req);
                 requestForm.Show();
+                progressBar.Visible = false;
             }
         }
 
+        // Add a new column, new components
         private void Btn_add_Click(object sender, EventArgs e) {
             try {
                 TextBox column = new TextBox();
@@ -205,6 +231,7 @@ namespace Dummy_db_generator {
                 size.Enabled = Check_create.Checked;
                 size.Tag = colNb;
                 size.Size = new System.Drawing.Size(52, 20);
+                size.KeyPress += new KeyPressEventHandler(this.Box_numericOnly);
                 size.TabIndex = tabIndex;
                 tabIndex++;
                 listSize.Add(size);
@@ -214,6 +241,7 @@ namespace Dummy_db_generator {
                 randomMin.Name = "Box_randomMin" + colNb.ToString();
                 randomMin.Tag = colNb;
                 randomMin.Size = new System.Drawing.Size(68, 20);
+                randomMin.KeyPress += new KeyPressEventHandler(this.Box_numericOnly);
                 listRandomMin.Add(randomMin);
 
                 TextBox randomMax = new TextBox();
@@ -221,6 +249,7 @@ namespace Dummy_db_generator {
                 randomMax.Name = "Box_randomMax" + colNb.ToString();
                 randomMax.Tag = colNb;
                 randomMax.Size = new System.Drawing.Size(68, 20);
+                randomMax.KeyPress += new KeyPressEventHandler(this.Box_numericOnly);
                 listRandomMax.Add(randomMax);
 
                 CheckBox mendatory = new CheckBox();
@@ -245,14 +274,7 @@ namespace Dummy_db_generator {
                 primary.UseVisualStyleBackColor = true;
                 listPrimary.Add(primary);
 
-
-                Controls.Add(column);
-                Controls.Add(type);
-                Controls.Add(size);
-                Controls.Add(mendatory);
-                Controls.Add(primary);
-                Controls.Add(randomMin);
-                Controls.Add(randomMax);
+                Controls.AddRange(new Control[] { column, type, size, mendatory, primary, randomMin, randomMax });
                 colNb++;
             }
             catch (Exception ex) {
@@ -260,8 +282,15 @@ namespace Dummy_db_generator {
             }
         }
 
-        // TODO : Complete method
+        // Delete last column
+        private void Btn_delete_Click(object sender, EventArgs e) {
+            if (colNb > 1) {
+            }
+        }
+
         private bool VerifInputs() {
+
+            // Table name
             if (Box_tableName.Text.Trim().Contains(" "))
                 Box_tableName.Text = Box_tableName.Text.Replace(" ", "_");
 
@@ -270,6 +299,7 @@ namespace Dummy_db_generator {
                 return false;
             }
 
+            // Columns name
             foreach (TextBox box in listColumn) {
                 if (box.Text.Contains(" "))
                     box.Text = box.Text.Trim().Replace(" ", "_");
@@ -281,7 +311,7 @@ namespace Dummy_db_generator {
                     return false;
                 }
             }
-
+            // Checkboxes
             if (Check_create.Checked) {
                 int primaryNb = 0;
                 foreach (CheckBox primary in listPrimary) {
@@ -295,7 +325,7 @@ namespace Dummy_db_generator {
 
                 }
             }
-
+            // White spaces
             if (String.IsNullOrWhiteSpace(Box_tableName.Text)) {
                 MessageBox.Show("Table name must be present", "Error", MessageBoxButtons.OK);
                 return false;
@@ -306,93 +336,135 @@ namespace Dummy_db_generator {
                 return false;
             }
 
-            foreach(TextBox box in listSize) {
+            // Textboxes cohereance
+            foreach (TextBox box in listSize) {
                 string type = listType[int.Parse(box.Tag.ToString())].Text;
-                if (type == "DOUBLE" ||type=="DECIMAL"||type=="FLOAT") {
-                    if (box.Text.Split(',').Length!=2) {
+                if (box.Enabled) {
+                    if (string.IsNullOrWhiteSpace(box.Text)) {
+                        MessageBox.Show($"Size must be present for the column {listColumn[int.Parse(box.Tag.ToString())].Text}", "Error", MessageBoxButtons.OK);
+                        return false;
+                    }
+                }
+                if (type == "DOUBLE" || type == "DECIMAL" || type == "FLOAT") {
+                    if (box.Text.Split(',').Length != 2) {
                         MessageBox.Show($"Size and precision must be present for the column {listColumn[int.Parse(box.Tag.ToString())].Text}", "Error", MessageBoxButtons.OK);
                         return false;
                     }
                 }
             }
 
+            //  Random min boxes
             foreach (TextBox box in listRandomMin) {
-                if (box.Text.Trim() != "") {
-                    try {
-                        switch (listType[int.Parse(box.Tag.ToString())].Text) {
-                            case "TINYINT":
-                                if (long.Parse(box.Text) < -128) {
-                                    error.AppendLine($"Minimun random number of column : {listColumn[int.Parse(box.Tag.ToString())].Text} overflow his type, value changed to -128");
-                                    box.Text = "-128";
-                                    Label_error.Visible = true;
-                                }
-                                break;
-                            case "SMALLINT":
-                                if (long.Parse(box.Text) < -32768) {
-                                    error.AppendLine($"Minimun random number of column : {listColumn[int.Parse(box.Tag.ToString())].Text} overflow his type, value changed to -32768");
-                                    box.Text = "-32768";
-                                    Label_error.Visible = true;
-                                }
-                                break;
-                            case "MEDIUMINT":
-                                if (long.Parse(box.Text) < -8388608) {
-                                    error.AppendLine($"Minimun random number of column : {listColumn[int.Parse(box.Tag.ToString())].Text} overflow his type, value changed to -8388608");
-                                    box.Text = "-1283886088";
-                                    Label_error.Visible = true;
-                                }
-                                break;
-                            case "INT":
-                                if (long.Parse(box.Text) < -2147483648) {
-                                    error.AppendLine($"Minimun random number of column : {listColumn[int.Parse(box.Tag.ToString())].Text} overflow his type, value changed to -2147483648");
-                                    box.Text = "-2147483648";
-                                    Label_error.Visible = true;
-                                }
-                                break;
-                        }
+                try {
+                    switch (listType[int.Parse(box.Tag.ToString())].Text) {
+                        case "TINYINT":
+                            if (box.Text.Trim() == "")
+                                box.Text = "-128";
+                            if (long.Parse(box.Text) < -128) {
+                                error.AppendLine($"Minimun random number of column : {listColumn[int.Parse(box.Tag.ToString())].Text} overflow his type, value changed to -128");
+                                box.Text = "-128";
+                                Label_error.Visible = true;
+                            }
+                            break;
+                        case "SMALLINT":
+                            if (box.Text.Trim() == "")
+                                box.Text = "-32768";
+                            if (long.Parse(box.Text) < -32768) {
+                                error.AppendLine($"Minimun random number of column : {listColumn[int.Parse(box.Tag.ToString())].Text} overflow his type, value changed to -32768");
+                                box.Text = "-32768";
+                                Label_error.Visible = true;
+                            }
+                            break;
+                        case "MEDIUMINT":
+                            if (box.Text.Trim() == "")
+                                box.Text = "-1283886088";
+                            if (long.Parse(box.Text) < -8388608) {
+                                error.AppendLine($"Minimun random number of column : {listColumn[int.Parse(box.Tag.ToString())].Text} overflow his type, value changed to -8388608");
+                                box.Text = "-1283886088";
+                                Label_error.Visible = true;
+                            }
+                            break;
+                        case "INT":
+                            if (box.Text.Trim() == "")
+                                box.Text = "-2147483648";
+                            if (long.Parse(box.Text) < -2147483648) {
+                                error.AppendLine($"Minimun random number of column : {listColumn[int.Parse(box.Tag.ToString())].Text} overflow his type, value changed to -2147483648");
+                                box.Text = "-2147483648";
+                                Label_error.Visible = true;
+                            }
+                            break;
+                        case "BIGINT":
+                            if (box.Text.Trim() == "")
+                                box.Text = "-9223372036854775808";
+                            break;
                     }
-                    catch (OverflowException oe) {
-                        MessageBox.Show("Overflow exception, a number is below -9223372036854775808", "Error", MessageBoxButtons.OK);
-                        return false;
+                }
+                catch (OverflowException) {
+                    MessageBox.Show("Overflow exception, a number is below -9223372036854775808", "Error", MessageBoxButtons.OK);
+                    return false;
+                }
+
+            }
+
+            // Random max boxes
+            foreach (TextBox box in listRandomMax) {
+                try {
+                    switch (listType[int.Parse(box.Tag.ToString())].Text) {
+                        case "TINYINT":
+                            if (box.Text.Trim() == "")
+                                box.Text = "127";
+                            if (long.Parse(box.Text) > 127) {
+                                error.AppendLine($"Maximum random number of column : {listColumn[int.Parse(box.Tag.ToString())].Text} overflow his type, value changed to 127");
+                                box.Text = "127";
+                                Label_error.Visible = true;
+                            }
+                            break;
+                        case "SMALLINT":
+                            if (box.Text.Trim() == "")
+                                box.Text = "32767";
+                            if (long.Parse(box.Text) > 32767) {
+                                error.AppendLine($"Maximum random number of column : {listColumn[int.Parse(box.Tag.ToString())].Text} overflow his type, value changed to 32767");
+                                box.Text = "32767";
+                                Label_error.Visible = true;
+                            }
+                            break;
+                        case "MEDIUMINT":
+                            if (box.Text.Trim() == "")
+                                box.Text = "8388607";
+                            if (long.Parse(box.Text) > 8388607) {
+                                error.AppendLine($"Maximum random number of column : {listColumn[int.Parse(box.Tag.ToString())].Text} overflow his type, value changed to 8388607");
+                                box.Text = "8388607";
+                                Label_error.Visible = true;
+                            }
+                            break;
+                        case "INT":
+                            if (box.Text.Trim() == "")
+                                box.Text = "8388607";
+                            if (long.Parse(box.Text) > 2147483647) {
+                                error.AppendLine($"Maximum random number of column : {listColumn[int.Parse(box.Tag.ToString())].Text} overflow his type, value changed to ");
+                                box.Text = "2147483647";
+                                Label_error.Visible = true;
+                            }
+                            break;
+                        case "BIGINT":
+                            if (box.Text.Trim() == "")
+                                box.Text = "9223372036854775807";
+                            break;
                     }
+                }
+                catch (OverflowException) {
+                    MessageBox.Show("Overflow exception, a number is higher than 9223372036854775807", "Error", MessageBoxButtons.OK);
+                    return false;
                 }
             }
 
-            foreach (TextBox box in listRandomMax) {
-                if (box.Text.Trim() != "") {
-                    try {
-                        switch (listType[int.Parse(box.Tag.ToString())].Text) {
-                            case "TINYINT":
-                                if (long.Parse(box.Text) > 127) {
-                                    error.AppendLine($"Maximum random number of column : {listColumn[int.Parse(box.Tag.ToString())].Text} overflow his type, value changed to 127");
-                                    box.Text = "127";
-                                    Label_error.Visible = true;
-                                }
-                                break;
-                            case "SMALLINT":
-                                if (long.Parse(box.Text) > 32767) {
-                                    error.AppendLine($"Maximum random number of column : {listColumn[int.Parse(box.Tag.ToString())].Text} overflow his type, value changed to 32767");
-                                    box.Text = "32767";
-                                    Label_error.Visible = true;
-                                }
-                                break;
-                            case "MEDIUMINT":
-                                if (long.Parse(box.Text) > 8388607) {
-                                    error.AppendLine($"Maximum random number of column : {listColumn[int.Parse(box.Tag.ToString())].Text} overflow his type, value changed to 8388607");
-                                    box.Text = "8388607";
-                                    Label_error.Visible = true;
-                                }
-                                break;
-                            case "INT":
-                                if (long.Parse(box.Text) > 2147483647) {
-                                    error.AppendLine($"Maximum random number of column : {listColumn[int.Parse(box.Tag.ToString())].Text} overflow his type, value changed to ");
-                                    box.Text = "2147483647";
-                                    Label_error.Visible = true;
-                                }
-                                break;
-                        }
-                    }
-                    catch (OverflowException oe) {
-                        MessageBox.Show("Overflow exception, a number is higher than 9223372036854775807", "Error", MessageBoxButtons.OK);
+            // TODO : Crash empty column
+
+            // Max < min
+            foreach (TextBox box in listRandomMin) {
+                if (box.Enabled) {
+                    if (long.Parse(box.Text) > long.Parse(listRandomMax[int.Parse(box.Tag.ToString())].Text)) {
+                        MessageBox.Show("A random min is bigger than the random max", "Error", MessageBoxButtons.OK);
                         return false;
                     }
                 }
@@ -401,154 +473,13 @@ namespace Dummy_db_generator {
             return true;
         }
 
-        private string GenInt(string size, long min = -9223372036854775808, long max = 9223372036854775807) {
-            try {
-
-                switch (size) {
-                    case "TINYINT":
-                        if (min == -9223372036854775808)
-                            min = -128;
-                        if (max == 9223372036854775807)
-                            max = 127;
-                        return random.Next((int)((min < -128) ? -128 : min), (int)((max > 127) ? 127 : max)).ToString();
-                    case "SMALLINT":
-                        if (min == -9223372036854775808)
-                            min = -32768;
-                        if (max == 9223372036854775807)
-                            max = 32767;
-                        return random.Next((int)((min < -32768) ? -32768 : min), (int)((max > 32767) ? 32767 : max)).ToString();
-                    case "MEDIUMINT":
-                        if (min == -9223372036854775808)
-                            min = -8388608;
-                        if (max == 9223372036854775807)
-                            max = 8388607;
-                        return random.Next((int)((min < -8388608) ? -8388608 : min), (int)((max > 8388607) ? 8388607 : max)).ToString();
-                    case "INT":
-                        if (min == -9223372036854775808)
-                            min = -2147483648;
-                        if (max == 9223372036854775807)
-                            max = 2147483647;
-                        return random.Next((int)((min < -2147483648) ? -2147483648 : min), (int)((max > 2147483647) ? 2147483647 : max)).ToString();
-                    case "BIGINT":
-                        long range = max - min;
-                        long longRand;
-                        do {
-                            byte[] buf = new byte[8];
-                            random.NextBytes(buf);
-                            longRand = (long)BitConverter.ToInt64(buf, 0);
-                        } while (longRand > long.MaxValue - ((long.MaxValue % range) + 1) % range);
-                        longRand = (longRand % range) + min;
-
-                        if (longRand % 5 < 0)
-                            longRand = longRand * -1;
-                        return longRand.ToString();
-                    default:
-                        return "42";
-                }
-            }
-            catch (Exception e) {
-                Console.WriteLine("Exception GenInt()" + e.Message + e.StackTrace);
-            }
-            return null;
-        }
-
-        private string GenMail() {
-            return $"{GenName("first")}.{GenName("last")}@mail.com";
-        }
-
-        private string GenName(string type) {
-            string name = "";
-            if (type == "first")
-                name = StaticArray.firstNames[random.Next(StaticArray.firstNames.Length + 1)];
-            else if (type == "last")
-                name = StaticArray.lastNames[random.Next(StaticArray.lastNames.Length + 1)];
-            return name;
-        }
-
-        private string GenDouble(int maxSize, int precision, double min, double max) {
-            string result = "";
-            try {
-                double nextDouble = random.NextDouble() * (max - min) + min;
-
-                if (nextDouble % 5 < 0)
-                    nextDouble = nextDouble * -1;
-                result = nextDouble.ToString();
-                if (result.Length > maxSize)
-                    result = result.Substring(0, result.Length - (result.Length - maxSize));
-                else if (result.Split(',')[1].Length > precision)
-                    result = result.Substring(0, result.Length - (result.Split('.')[1].Length - precision));
-            }
-            catch (Exception e) {
-                Console.WriteLine("Exception GenDouble()" + e.Message + e.StackTrace);
-            }
-            return result;
-        }
-
-        private string GenLorem(long maxSize) {
-            StringBuilder result = new StringBuilder();
-            try {
-
-                byte[] buf = new byte[8];
-                random.NextBytes(buf);
-                long longRand = BitConverter.ToInt64(buf, 0);
-                long randWord = (Math.Abs(longRand % (maxSize - 1)) + 1);
-
-                var words = new[]{"lorem", "ipsum", "dolor", "sit", "amet", "consectetuer",
-                "adipiscing", "elit", "sed", "diam", "do",",", "nonummy", "nibh", "euismod",
-                "tincidunt", "ut", "laoreet", "dolore", "magna", "aliquam", "erat",".","eiusmod",
-                "tempor","incididunt","labore","et","aliqua","enim","ad","minim","veniam",
-                "quis","nostrud","exercitation","ullamco","laboris","nisi","aliquip","ex","ea",
-                "commodo","consequat","duis","aute","irure","in","reprehenderit","voluptate",
-                "velit","esse","cillum","eu","fugiat","nulla","pariatur","excepteur","sint",
-                "occaecat","cupidatat","non","proident","sunt","culpa","qui","officia",
-                "deserunt","mollit","anim","id","est","laborum"};
-
-                for (long w = 0; w < randWord; w++) {
-                    if ((maxSize - result.Length) <= 13)
-                        continue;
-                    if (w > 0)
-                        result.Append(" ");
-                    result.Append(words[random.Next(words.Length)]);
-                }
-            }
-            catch (Exception e) {
-                Console.WriteLine("Exception GenLorem()" + e.Message + e.StackTrace);
-            }
-
-            return result.ToString();
-        }
-
-        private string GenDateTime(bool date, bool time) {
-            DateTime dateTime = new DateTime();
-            try {
-
-                if (date) {
-                    dateTime = dateTime.AddYears(random.Next(1900, (Check_futureDate.Checked) ? int.Parse(Box_maxYear.Text) : DateTime.Now.Year));
-                    dateTime = dateTime.AddMonths(random.Next(1, (Check_futureDate.Checked) ? 12 : DateTime.Now.Month));
-                    dateTime = dateTime.AddDays(random.Next(1, (Check_futureDate.Checked) ? 31 : DateTime.Now.Day));
-                    if (!time)
-                        return dateTime.ToShortDateString();
-                }
-                if (time) {
-                    dateTime = dateTime.AddHours(random.Next(0, 24));
-                    dateTime = dateTime.AddMinutes(random.Next(0, 60));
-                    dateTime = dateTime.AddSeconds(random.Next(0, 60));
-                    if (!date)
-                        return dateTime.ToLongTimeString();
-                }
-            }
-            catch (Exception e) {
-                Console.WriteLine("Exception GenDateTime()" + e.Message + e.StackTrace);
-            }
-
-            return dateTime.ToString();
-        }
-
-        #region Events
+        #region Events w/ buttons
+        // +=Possible futures dates
         private void Check_futureDate_CheckedChanged(object sender, EventArgs e) {
             Box_maxYear.Enabled = ((CheckBox)sender).Checked;
         }
 
+        // +=Create table
         private void Check_create_CheckedChanged(object sender, EventArgs e) {
             foreach (CheckBox checkBox in listPrimary) {
                 checkBox.Enabled = ((CheckBox)sender).Checked;
@@ -559,18 +490,21 @@ namespace Dummy_db_generator {
             }
         }
 
+        // Accept only digit
         private void Box_onlyDigit(object sender, KeyPressEventArgs e) {
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar)) {
                 e.Handled = true;
             }
         }
 
+        // Accept only numeric
         private void Box_numericOnly(object sender, KeyPressEventArgs e) {
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && (e.KeyChar != ',')) {
                 e.Handled = true;
             }
         }
 
+        // +=Type combo box
         private void Combo_type_SelectedIndexChanged(object sender, EventArgs e) {
             var cb = sender as ComboBox;
 
@@ -583,16 +517,19 @@ namespace Dummy_db_generator {
                 listSize[(int)cb.Tag].Enabled = false;
                 listRandomMin[(int)cb.Tag].Enabled = false;
                 listRandomMax[(int)cb.Tag].Enabled = false;
-            } else if (((ComboBoxItem)cb.SelectedItem).Value == 1) {
+            }
+            else if (((ComboBoxItem)cb.SelectedItem).Value == 1) {
                 listSize[(int)cb.Tag].Enabled = false;
                 listRandomMin[(int)cb.Tag].Enabled = true;
                 listRandomMax[(int)cb.Tag].Enabled = true;
-            } else if (((ComboBoxItem)cb.SelectedItem).Value == 2) {
+            }
+            else if (((ComboBoxItem)cb.SelectedItem).Value == 2) {
                 if (Check_create.Checked)
                     listSize[(int)cb.Tag].Enabled = true;
                 listRandomMin[(int)cb.Tag].Enabled = true;
                 listRandomMax[(int)cb.Tag].Enabled = true;
-            } else if (((ComboBoxItem)cb.SelectedItem).Value == 3) {
+            }
+            else if (((ComboBoxItem)cb.SelectedItem).Value == 3) {
                 if (Check_create.Checked)
                     listSize[(int)cb.Tag].Enabled = true;
                 listRandomMin[(int)cb.Tag].Enabled = false;

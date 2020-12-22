@@ -32,13 +32,14 @@
             this.Box_request.MaxLength = 2147483647;
             this.Box_request.Multiline = true;
             this.Box_request.Name = "Box_request";
+            this.Box_request.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.Box_request.Size = new System.Drawing.Size(438, 438);
+            this.HScroll = true;
             this.Box_request.TabIndex = 0;
             // 
             // RequestForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScroll = true;
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(462, 462);
             this.Controls.Add(this.Box_request);

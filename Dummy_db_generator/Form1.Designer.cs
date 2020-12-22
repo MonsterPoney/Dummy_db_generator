@@ -48,6 +48,8 @@ namespace Dummy_db_generator {
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.Label_error = new System.Windows.Forms.Label();
+            this.progressBar = new System.Windows.Forms.ProgressBar();
+            this.Btn_delete = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // Box_tableName
@@ -72,7 +74,8 @@ namespace Dummy_db_generator {
             this.Check_create.Location = new System.Drawing.Point(202, 14);
             this.Check_create.Name = "Check_create";
             this.Check_create.Size = new System.Drawing.Size(83, 17);
-            this.Check_create.TabIndex = 9;
+            this.Check_create.TabIndex = 17;
+            this.Check_create.TabStop = false;
             this.Check_create.Text = "Create table";
             this.Check_create.UseVisualStyleBackColor = true;
             this.Check_create.CheckedChanged += new System.EventHandler(this.Check_create_CheckedChanged);
@@ -100,8 +103,6 @@ namespace Dummy_db_generator {
             this.Combo_type0.DisplayMember = "Text";
             this.Combo_type0.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.Combo_type0.FormattingEnabled = true;
-           
-            this.Combo_type0.Items.AddRange(ComboBoxItemShare.items);
             this.Combo_type0.Location = new System.Drawing.Point(118, 142);
             this.Combo_type0.Name = "Combo_type0";
             this.Combo_type0.Size = new System.Drawing.Size(121, 21);
@@ -116,7 +117,7 @@ namespace Dummy_db_generator {
             this.Check_nonNull0.Location = new System.Drawing.Point(457, 144);
             this.Check_nonNull0.Name = "Check_nonNull0";
             this.Check_nonNull0.Size = new System.Drawing.Size(65, 17);
-            this.Check_nonNull0.TabIndex = 5;
+            this.Check_nonNull0.TabIndex = 7;
             this.Check_nonNull0.Tag = 0;
             this.Check_nonNull0.Text = "Non null";
             this.Check_nonNull0.UseVisualStyleBackColor = true;
@@ -126,7 +127,8 @@ namespace Dummy_db_generator {
             this.Btn_generate.Location = new System.Drawing.Point(688, 8);
             this.Btn_generate.Name = "Btn_generate";
             this.Btn_generate.Size = new System.Drawing.Size(75, 23);
-            this.Btn_generate.TabIndex = 8;
+            this.Btn_generate.TabIndex = 16;
+            this.Btn_generate.TabStop = false;
             this.Btn_generate.Tag = 0;
             this.Btn_generate.Text = "Generate";
             this.Btn_generate.UseVisualStyleBackColor = true;
@@ -137,7 +139,8 @@ namespace Dummy_db_generator {
             this.Btn_add.Location = new System.Drawing.Point(713, 138);
             this.Btn_add.Name = "Btn_add";
             this.Btn_add.Size = new System.Drawing.Size(75, 23);
-            this.Btn_add.TabIndex = 7;
+            this.Btn_add.TabIndex = 15;
+            this.Btn_add.TabStop = false;
             this.Btn_add.Text = "Add column";
             this.Btn_add.UseVisualStyleBackColor = true;
             this.Btn_add.Click += new System.EventHandler(this.Btn_add_Click);
@@ -160,7 +163,7 @@ namespace Dummy_db_generator {
             this.label1.Location = new System.Drawing.Point(12, 15);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(63, 13);
-            this.label1.TabIndex = 10;
+            this.label1.TabIndex = 14;
             this.label1.Text = "Table name";
             // 
             // label2
@@ -169,7 +172,7 @@ namespace Dummy_db_generator {
             this.label2.Location = new System.Drawing.Point(408, 15);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(83, 13);
-            this.label2.TabIndex = 11;
+            this.label2.TabIndex = 13;
             this.label2.Text = "Iteration number";
             // 
             // Check_futureDate
@@ -179,6 +182,7 @@ namespace Dummy_db_generator {
             this.Check_futureDate.Name = "Check_futureDate";
             this.Check_futureDate.Size = new System.Drawing.Size(119, 17);
             this.Check_futureDate.TabIndex = 12;
+            this.Check_futureDate.TabStop = false;
             this.Check_futureDate.Text = "Possible future date";
             this.Check_futureDate.UseVisualStyleBackColor = true;
             this.Check_futureDate.CheckedChanged += new System.EventHandler(this.Check_futureDate_CheckedChanged);
@@ -189,17 +193,19 @@ namespace Dummy_db_generator {
             this.label3.Location = new System.Drawing.Point(12, 79);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(58, 13);
-            this.label3.TabIndex = 13;
+            this.label3.TabIndex = 11;
             this.label3.Text = "Max Year :";
             // 
             // Box_maxYear
             // 
             this.Box_maxYear.Enabled = false;
             this.Box_maxYear.Location = new System.Drawing.Point(76, 76);
+            this.Box_maxYear.MaxLength = 4;
             this.Box_maxYear.Name = "Box_maxYear";
             this.Box_maxYear.ShortcutsEnabled = false;
             this.Box_maxYear.Size = new System.Drawing.Size(58, 20);
-            this.Box_maxYear.TabIndex = 14;
+            this.Box_maxYear.TabIndex = 10;
+            this.Box_maxYear.TabStop = false;
             this.Box_maxYear.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Box_onlyDigit);
             // 
             // label4
@@ -208,7 +214,7 @@ namespace Dummy_db_generator {
             this.label4.Location = new System.Drawing.Point(25, 126);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(71, 13);
-            this.label4.TabIndex = 15;
+            this.label4.TabIndex = 9;
             this.label4.Text = "Column name";
             // 
             // label5
@@ -217,7 +223,7 @@ namespace Dummy_db_generator {
             this.label5.Location = new System.Drawing.Point(144, 126);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(31, 13);
-            this.label5.TabIndex = 16;
+            this.label5.TabIndex = 8;
             this.label5.Text = "Type";
             // 
             // label6
@@ -226,7 +232,7 @@ namespace Dummy_db_generator {
             this.label6.Location = new System.Drawing.Point(254, 126);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(27, 13);
-            this.label6.TabIndex = 17;
+            this.label6.TabIndex = 7;
             this.label6.Text = "Size";
             // 
             // Box_randomMin0
@@ -235,8 +241,9 @@ namespace Dummy_db_generator {
             this.Box_randomMin0.MaxLength = 19;
             this.Box_randomMin0.Name = "Box_randomMin0";
             this.Box_randomMin0.Size = new System.Drawing.Size(68, 20);
-            this.Box_randomMin0.TabIndex = 23;
+            this.Box_randomMin0.TabIndex = 5;
             this.Box_randomMin0.Tag = "0";
+            this.Box_randomMin0.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Box_numericOnly);
             // 
             // Box_randomMax0
             // 
@@ -244,8 +251,9 @@ namespace Dummy_db_generator {
             this.Box_randomMax0.MaxLength = 19;
             this.Box_randomMax0.Name = "Box_randomMax0";
             this.Box_randomMax0.Size = new System.Drawing.Size(68, 20);
-            this.Box_randomMax0.TabIndex = 22;
+            this.Box_randomMax0.TabIndex = 6;
             this.Box_randomMax0.Tag = "0";
+            this.Box_randomMax0.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Box_numericOnly);
             // 
             // label7
             // 
@@ -253,7 +261,7 @@ namespace Dummy_db_generator {
             this.label7.Location = new System.Drawing.Point(305, 126);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(66, 13);
-            this.label7.TabIndex = 20;
+            this.label7.TabIndex = 3;
             this.label7.Text = "Random min";
             // 
             // label8
@@ -262,7 +270,7 @@ namespace Dummy_db_generator {
             this.label8.Location = new System.Drawing.Point(379, 126);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(69, 13);
-            this.label8.TabIndex = 21;
+            this.label8.TabIndex = 2;
             this.label8.Text = "Random max";
             // 
             // Label_error
@@ -273,9 +281,29 @@ namespace Dummy_db_generator {
             this.Label_error.Location = new System.Drawing.Point(198, 72);
             this.Label_error.Name = "Label_error";
             this.Label_error.Size = new System.Drawing.Size(543, 20);
-            this.Label_error.TabIndex = 24;
+            this.Label_error.TabIndex = 1;
             this.Label_error.Text = "Some minor errors has occurred, check the end of the script for more details";
             this.Label_error.Visible = false;
+            // 
+            // progressBar
+            // 
+            this.progressBar.Location = new System.Drawing.Point(250, 217);
+            this.progressBar.Name = "progressBar";
+            this.progressBar.Size = new System.Drawing.Size(300, 25);
+            this.progressBar.TabIndex = 0;
+            this.progressBar.TabStop = false;
+            this.progressBar.Visible = false;
+            // 
+            // Btn_delete
+            // 
+            this.Btn_delete.Location = new System.Drawing.Point(713, 180);
+            this.Btn_delete.Name = "Btn_delete";
+            this.Btn_delete.Size = new System.Drawing.Size(75, 37);
+            this.Btn_delete.TabIndex = 18;
+            this.Btn_delete.TabStop = false;
+            this.Btn_delete.Text = "Delete last column";
+            this.Btn_delete.UseVisualStyleBackColor = true;
+            this.Btn_delete.Click += new System.EventHandler(this.Btn_delete_Click);
             // 
             // Form1
             // 
@@ -283,6 +311,8 @@ namespace Dummy_db_generator {
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.Btn_delete);
+            this.Controls.Add(this.progressBar);
             this.Controls.Add(this.Label_error);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
@@ -327,9 +357,7 @@ namespace Dummy_db_generator {
         private CheckBox Check_primary0;
         private Label label1;
         private Label label2;
-        private CheckBox Check_futureDate;
         private Label label3;
-        private TextBox Box_maxYear;
         private Label label4;
         private Label label5;
         private Label label6;
@@ -338,6 +366,10 @@ namespace Dummy_db_generator {
         private Label label7;
         private Label label8;
         private Label Label_error;
+        private ProgressBar progressBar;
+        public CheckBox Check_futureDate;
+        public TextBox Box_maxYear;
+        private Button Btn_delete;
     }
 }
 
